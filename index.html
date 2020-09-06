@@ -15,6 +15,7 @@
     <button type="btnLine" onclick="split4(ctx);">四等分</button>
     <button type="btnLine" onclick="split6A(ctx);">六等分A</button>
     <button type="btnLine" onclick="split6B(ctx);">六等分B</button>
+    <button type="btnLine" onclick="drawFlowersOfLife(ctx);">生命之花</button>
     <button type="btnLine" onclick="drawAngle(ctx, Math.PI * 0.5);">Test</button>
     <button type="btnLine" onclick="save();">存檔</button>
   </div>
@@ -94,6 +95,13 @@
       ctx.stroke();
     }
   </script>
+    <script>
+      function drawCircle2(ctx, centerx, centery, r) {
+        ctx.beginPath();
+        ctx.arc(centerx, centery, r, 0, 2 * Math.PI);
+        ctx.stroke();
+      }
+    </script>
   <script>
     function drawLine(ctx, x, y) {
       ctx.beginPath();
@@ -203,6 +211,29 @@
     }
 
   </script>
+
+  <script>
+    function drawFlowersOfLife(ctx) {
+      ctx.beginPath();
+      var cx = canvasWidth / 2,
+          cy = canvasHeight / 2;
+      var r = 50;
+      var R = Math.pow(Math.pow(canvasWidth, 2)  + Math.pow(canvasHeight, 2), 0.5);
+      var dx = r * Math.cos(30/180*Math.PI) * 2
+      var dy = r;
+      var startx = cx - Math.ceil(R / dx) * dx, endx = cx + Math.ceil(R / dx) * dx;
+      var starty = cy - Math.ceil(R / dy) * dy, endy = cy + Math.ceil(R / dy) * dy;
+      console.log(startx, endx)
+      for (var x = startx; x <= endx; x += dx) {
+        for (var y = starty; y <= endy; y += dy) {
+          drawCircle2(ctx, x, y, r);
+          drawCircle2(ctx, x+dx/2, y+dy/2, r);
+        }
+      }
+    }
+
+  </script>
+
 
   <script>
     function save() {
