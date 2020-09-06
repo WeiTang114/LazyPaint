@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div>
+    <button type="btnCircle" onclick="changeMode(Mode.circle);">圓形</button>
+    <button type="btnLine" onclick="changeMode(Mode.line);">直線</button>
+    <button type="btnLine" onclick="split2(ctx)">二等分</button>
+    <button type="btnLine" onclick="split4(ctx);">四等分</button>
+    <button type="btnLine" onclick="split6A(ctx);">六等分A</button>
+    <button type="btnLine" onclick="split6B(ctx);">六等分B</button>
+    <button type="btnLine" onclick="drawAngle(ctx, Math.PI * 0.5);">Test</button>
+    <button type="btnLine" onclick="save();">存檔</button>
+  </div>
+  <canvas id="myCanvas" width="700" height="700" style="border:1px solid #000000 ;"></canvas>
+
+  <div id="message"></div>
+  <script>
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+
+    var canvasWidth = c.offsetWidth,
+        canvasHeight = c.offsetHeight;
+
+    // white background
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // 虛線
+    ctx.setLineDash([5, 5]);
+    
+
+    // draw circle
+    // ctx.beginPath();
+    // ctx.arc(95, 50, 40, 0, 2 * Math.PI);
+    // ctx.stroke();
+
+    // // draw line
+    // ctx.moveTo(0, 0);
+    // ctx.lineTo(200, 100);
+    // ctx.stroke();
+
+    var cvsLeft = c.offsetLeft + c.clientLeft,
+        cvsTop = c.offsetTop + c.clientTop;
+
+    // Add event listener for `click` events.
+    c.addEventListener('click', function(event) {
+        var x = event.pageX - cvsLeft,
+            y = event.pageY - cvsTop;
+
+        console.log(x, y)
+        switch (mode) {
+          case Mode.circle:
+            drawCircle(ctx, x, y);
+            break;
+          case Mode.line:
+            drawLine(ctx, x, y);
+            break;
+        }
+
+    }, false);
+  </script>
+
+  <script>
+    // define enum
+    const Mode = {"circle":1, "line":2}
+    Object.freeze(Mode)
+
+    var mode = Mode.circle;
+    var btnCircle = document.getElementById("btnCircle");
+    var btnLine = document.getElementById("btnLine");
+    
+    function changeMode(m) {
+      mode = m;
+    }
+
+  </script>
+
+  <script>
+    function drawCircle(ctx, x, y) {
+      ctx.beginPath();
+      var cx = canvasWidth / 2,
+          cy = canvasHeight / 2;
+      
+      var r = Math.pow(Math.pow(x - cx, 2)  + Math.pow(y - cy, 2), 0.5);
+
+      ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+  </script>
+  <script>
+    function drawLine(ctx, x, y) {
+      ctx.beginPath();
+      var cx = canvasWidth / 2,
+          cy = canvasHeight / 2;
+      var dx = x - cx, dy = y - cy;
+      var startx = endx = cx,
+          starty = endy = cy;
+      var R = Math.pow(Math.pow(canvasWidth, 2)  + Math.pow(canvasHeight, 2), 0.5);
+      var r = Math.pow(Math.pow(x - cx, 2)  + Math.pow(y - cy, 2), 0.5);
+      if (dx != 0) {
+        startx = cx - dx * (R / r);
+        endx = cx + dx * (R / r);
+      }
+      if (dy != 0) {
+        starty = cy - dy * (R / r);
+        endy = cy + dy * (R / r);
+      }
+    
+      console.log(startx, starty, " to ", endx, endy);
+      ctx.moveTo(startx, starty);
+      ctx.lineTo(endx, endy);
+      ctx.stroke();
+    }
+  </script>
+  <script>
+    var angles = [];
+    function split2(ctx) {
+      if (angles.length == 0) {
+        msg("還沒辦法二等分！");
+        return;
+      }
+      var newAngles = [];
+      var lastAngle = null;
+      console.log("angles:", angles);
+      for (var i = 0; i < angles.length; i++) {
+        var a = angles[i];
+        if (lastAngle != null) {
+          var newA = (lastAngle + a) / 2.0;
+          console.log("newA:", newA);
+          newAngles.push(newA);
+          drawAngle(ctx, newA);
+        }
+        lastAngle = a;
+        newAngles.push(a);
+      }
+      console.log("new angles:", newAngles);
+      angles = newAngles;
+    }
+
+    function split4(ctx) {
+      if (angles.length == 0) {
+        angles = [0, Math.PI/2.0, Math.PI];
+        drawAngle(ctx, 0);
+        drawAngle(ctx, Math.PI/2.0);
+        return;
+      }
+      split2(ctx);
+      split2(ctx);
+    }
+
+    function split6A(ctx) {
+      if (angles.length == 0) {
+        angles = [0, Math.PI/3.0, Math.PI/3.0*2.0, Math.PI];
+        drawAngle(ctx, 0);
+        drawAngle(ctx, Math.PI/3.0);
+        drawAngle(ctx, Math.PI/3.0*2.0);
+        return;
+      }
+      msg("不支援這麼猛的六等分")
+    }
+    function split6B(ctx) {
+      if (angles.length == 0) {
+        const pi = Math.PI;
+        angles = [-pi/6, pi/6, pi/2, pi * 5/6];
+        drawAngle(ctx, pi/6);
+        drawAngle(ctx, pi/2);
+        drawAngle(ctx, pi*5/6);
+        return;
+      }
+      msg("不支援這麼猛的六等分")
+    }
+
+    function drawAngle(ctx, angle) {
+      var cx = canvasWidth / 2,
+          cy = canvasHeight / 2;
+      var R = Math.pow(Math.pow(canvasWidth, 2)  + Math.pow(canvasHeight, 2), 0.5);
+      var x = 0, y = 0;
+      if (angle == 0) {
+        x = R;
+        y = 0;
+      } else if (angle < Math.PI / 2.0) {
+        x = R;
+        y = Math.tan(angle) * x;
+      } else if (angle == Math.PI / 2.0) {
+        x = 0;
+        y = R;
+      } else if (angle < Math.PI) {
+        x = R;
+        y = Math.tan(angle) * x;
+      } else if (angle == Math.PI) {
+        x = R;
+        y = 0;
+      }
+      msg("" + x + "," +  y)
+      drawLine(ctx, cx + x, cy + y);
+    }
+
+  </script>
+
+  <script>
+    function save() {
+      // Convert canvas to image
+      var canvas = document.getElementById("myCanvas");
+
+      var dataURL = canvas.toDataURL("image/png", 1.0);
+      downloadImage(dataURL, 'my-easy-image.png');
+    }
+
+    // Save | Download image
+    function downloadImage(data, filename = 'my-easy-image.png') {
+        var a = document.createElement('a');
+        a.href = data;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+    }
+  </script>
+
+  <script>
+    function msg(text) {
+      document.getElementById("message").innerHTML = text;
+    }
+  </script>
+</body>
+
+</html>
