@@ -4,20 +4,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>畫圖小工具</title>
 </head>
 
 <body>
   <div>
-    <button type="btnCircle" onclick="changeMode(Mode.circle);">圓形</button>
-    <button type="btnLine" onclick="changeMode(Mode.line);">直線</button>
-    <button type="btnLine" onclick="split2(ctx)">二等分</button>
-    <button type="btnLine" onclick="split4(ctx);">四等分</button>
-    <button type="btnLine" onclick="split6A(ctx);">六等分A</button>
-    <button type="btnLine" onclick="split6B(ctx);">六等分B</button>
-    <button type="btnLine" onclick="drawFlowersOfLife(ctx);">生命之花</button>
-    <button type="btnLine" onclick="drawAngle(ctx, Math.PI * 0.5);">Test</button>
-    <button type="btnLine" onclick="save();">存檔</button>
+    <button onclick="changeMode(Mode.circle);">圓形</button>
+    <button onclick="changeMode(Mode.line);">直線</button>
+    <button onclick="split2(ctx)">二等分</button>
+    <button onclick="split4(ctx);">四等分</button>
+    <button onclick="split6A(ctx);">六等分A</button>
+    <button onclick="split6B(ctx);">六等分B</button>
+    <button onclick="drawFlowersOfLife(ctx);">生命之花</button>
+    <button id="btnDashed" onclick="toggleDashed(ctx);">改用實線</button>
+    <button onclick="save();">存檔</button>
   </div>
   <canvas id="myCanvas" width="700" height="700" style="border:1px solid #000000 ;"></canvas>
 
@@ -34,6 +34,7 @@
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
     // 虛線
+    var dashed = true;
     ctx.setLineDash([5, 5]);
     
 
@@ -232,6 +233,20 @@
       }
     }
 
+  </script>
+
+  <script>
+    function toggleDashed(ctx) {
+      var btn = document.getElementById("btnDashed");
+      if (dashed) {
+        ctx.setLineDash([]);
+        btn.innerHTML = "改用虛線";
+      } else {
+        ctx.setLineDash([5, 5]);
+        btn.innerHTML = "改用實線";
+      }
+      dashed = !dashed;
+    }
   </script>
 
 
